@@ -349,5 +349,64 @@ void KisCubicCurve::setPoints(const std::vector<PPoint>& points)
 }
 
 
+int StringSplit(std::vector<std::string>& dst, const std::string& src, const std::string& separator)
+{
+   if (src.empty() || separator.empty())
+      return 0;
+
+   int nCount = 0;
+   std::string temp;
+   size_t pos = 0, offset = 0;
+
+   // 分割第1~n-1个
+   while ((pos = src.find_first_of(separator, offset)) != std::string::npos)
+   {
+      temp = src.substr(offset, pos - offset);
+      if (temp.length() > 0) {
+         dst.push_back(temp);
+         nCount++;
+      }
+      offset = pos + 1;
+   }
+
+   // 分割第n个
+   temp = src.substr(offset, src.length() - offset);
+   if (temp.length() > 0) {
+      dst.push_back(temp);
+      nCount++;
+   }
+
+   return nCount;
+}
 
 
+void KisCubicCurve::fromString(const std::string& string)
+{
+   std::vector<std::string> data;
+   StringSplit(data, string, std::string(";"));
+
+   std::vector<PPoint> points;
+
+   for (const std::string & pair : data) {
+      if (pair.find(',') > -1) {
+         PPoint p;
+         data.clear();
+         StringSplit(data, pair, std::string(","));
+         if (data.size() != 2)
+            continue;
+
+         p.rx() = qBound(0.0, atof(data[0].c_str()), 1.0);
+         p.ry() = qBound(0.0, atof(data[1].c_str()), 1.0);
+         points.push_back(p);
+      }
+   }
+
+   if (points.size() < 2)
+   {
+      points.clear();
+      points.push_back(PPoint(0.0, 0.0, 0));
+      points.push_back(PPoint(1.0, 1.0, 0));
+   }
+
+   setPoints(points);
+}

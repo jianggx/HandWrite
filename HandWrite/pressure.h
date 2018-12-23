@@ -21,6 +21,7 @@
 #define CANVAS_PRESSURE_H
 
 #include "kis_cubic_curve.h"
+#include <math.h>
 
 struct PressureMapping {
 	enum Mode {
@@ -33,7 +34,25 @@ struct PressureMapping {
 	KisCubicCurve curve;
 	float param;
 
-	PressureMapping() : mode(STYLUS), param(1.0) { }
+   PressureMapping() : mode(STYLUS), param(1.0) { };
+
+   float mapPressure(float value)
+   {
+      switch (mode) {
+      case PressureMapping::STYLUS:
+         return curve.value(value);
+
+      case PressureMapping::DISTANCE: {
+         float d = min(value, param) / param;
+         return curve.value(d);
+      }
+
+      case PressureMapping::VELOCITY:
+         float v = min(value, param) / param;
+         return curve.value(v);
+      }
+      return 0;
+   }
 };
 
 #endif

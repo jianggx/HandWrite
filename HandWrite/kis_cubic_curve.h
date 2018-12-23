@@ -37,7 +37,7 @@ public:
     float value(float x) const;
     std::vector<PPoint> points() const;
     void setPoints(const std::vector<PPoint>& points);
-
+    void fromString(const std::string& string);
 private:
     struct Data;
     std::auto_ptr<Data>  d;
