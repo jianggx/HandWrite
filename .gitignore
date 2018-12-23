@@ -1,0 +1,8 @@
+Debug/
+ipch/
+*.sdf
+*.user
+*.suo
+**/Debug/
+*.opendb
+*.aps
