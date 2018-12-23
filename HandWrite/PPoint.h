@@ -44,6 +44,7 @@ public:
       return hypot(p1.x() - p2.x(), p1.y() - p2.y());
    }
    float distance(const PPoint &point) const { return distance(*this, point); }
+
 };
 
 static inline PPoint operator-(const PPoint& p1, const PPoint& p2)
@@ -54,4 +55,9 @@ static inline PPoint operator-(const PPoint& p1, const PPoint& p2)
 static inline PPoint operator+(const PPoint& p1, const PPoint& p2)
 {
    return PPoint(p1.x() + p2.x(), p1.y() + p2.y(), p1.pressure());
+}
+
+static inline bool operator==(const PPoint& p1, const PPoint& p2)
+{
+   return PPoint::roughlySame(p1, p2);
 }

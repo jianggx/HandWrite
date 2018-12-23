@@ -6,6 +6,9 @@
 #include "HandWrite.h"
 #include "HandWriteDlg.h"
 #include "afxdialogex.h"
+#include "freehand.h"
+#include "pressure.h"
+#include "GdiPainter.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

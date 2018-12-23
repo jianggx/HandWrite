@@ -185,17 +185,26 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="freehand.h" />
+    <ClInclude Include="GdiPainter.h" />
     <ClInclude Include="HandWrite.h" />
     <ClInclude Include="HandWriteDlg.h" />
+    <ClInclude Include="kis_cubic_curve.h" />
+    <ClInclude Include="Painter.h" />
     <ClInclude Include="PPoint.h" />
+    <ClInclude Include="pressure.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="strokesmoother.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="tool.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="freehand.cpp" />
+    <ClCompile Include="GdiPainter.cpp" />
     <ClCompile Include="HandWrite.cpp" />
     <ClCompile Include="HandWriteDlg.cpp" />
+    <ClCompile Include="kis_cubic_curve.cpp" />
     <ClCompile Include="PPoint.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -39,6 +39,24 @@
     <ClInclude Include="PPoint.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="tool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="freehand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Painter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GdiPainter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kis_cubic_curve.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pressure.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HandWrite.cpp">
@@ -54,6 +72,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PPoint.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="freehand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GdiPainter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kis_cubic_curve.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
