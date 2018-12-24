@@ -73,6 +73,8 @@ public:
 	//! Does this tool allow stroke smoothing to be used?
 	virtual bool allowSmoothing() const { return false; }
 
+   Painter &getPainter() { return painter; }
+
 protected:
    Painter &painter;
 

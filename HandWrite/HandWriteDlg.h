@@ -4,7 +4,8 @@
 
 #pragma once
 
-class FreeHand;
+class Freehand;
+class GdiPainter;
 
 // CHandWriteDlg 对话框
 class CHandWriteDlg : public CDialogEx
@@ -26,9 +27,10 @@ public:
 protected:
 	HICON m_hIcon;
 
-   CPoint m_lastpoint;
+   std::auto_ptr<Freehand> m_freehand;
+   std::auto_ptr<GdiPainter> m_painter;
 
-   std::auto_ptr<FreeHand> m_freehand;
+   CDC m_dcMemory;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();

@@ -1,17 +1,20 @@
 #pragma once
 #include "Painter.h"
+
 class GdiPainter :
    public Painter
 {
 public:
-   GdiPainter(Gdiplus::Graphics& g);
+   GdiPainter(int w, int h);
    virtual ~GdiPainter();
 
    virtual void PenMove(const std::vector<PPoint>& pts);
    virtual void PenUp();
 
+   Gdiplus::Bitmap* getBitmap() { return m_pBitmap.get(); }
+
 private:
-   Gdiplus::Graphics& m_graphcs;
+   std::auto_ptr<Gdiplus::Bitmap> m_pBitmap;
    bool m_pendown;
    int m_penwidth;
    PPoint m_lastpoint;

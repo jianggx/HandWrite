@@ -24,6 +24,7 @@
 Freehand::Freehand(Painter &painter)
 	: Tool(painter, FREEHAND)
 {
+   m_smoother.setSmoothing(10);
 }
 
 void Freehand::pen_move(const PPoint& point) const

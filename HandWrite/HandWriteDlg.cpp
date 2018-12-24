@@ -9,6 +9,7 @@
 #include "freehand.h"
 #include "pressure.h"
 #include "GdiPainter.h"
+#include"PPoint.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -51,6 +52,13 @@ BOOL CHandWriteDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+   //CPaintDC dc(this);
+  // Gdiplus::Graphics b(dc.m_hDC);
+   //m_graphics.reset(new Gdiplus::Graphics(dc.m_hDC)); // 创建图形对象
+   CRect rect;
+   GetClientRect(&rect);
+   m_painter.reset(new GdiPainter(rect.Width(), rect.Height()));
+   m_freehand.reset(new Freehand(*m_painter));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -84,6 +92,8 @@ void CHandWriteDlg::OnPaint()
       Gdiplus::Graphics graph(dc.m_hDC); // 创建图形对象
       graph.SetSmoothingMode(Gdiplus::SmoothingMode::SmoothingModeAntiAlias);
 
+      graph.DrawImage(m_painter->getBitmap(), 0, 0 );
+
       Gdiplus::Pen bluePen(Gdiplus::Color(255, 0, 0, 255)); // 创建蓝色笔
       Gdiplus::Pen redPen(Gdiplus::Color(255, 255, 0, 0)); // 创建红色笔
 
@@ -106,6 +116,10 @@ HCURSOR CHandWriteDlg::OnQueryDragIcon()
 void CHandWriteDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
+   PPoint p(point.x, point.y, 1);
+   m_freehand->begin(p);
+
+   Invalidate();
 
    CDialogEx::OnMouseMove(nFlags, point);
 }
@@ -114,6 +128,10 @@ void CHandWriteDlg::OnMouseMove(UINT nFlags, CPoint point)
 void CHandWriteDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
+   PPoint p(point.x, point.y, 1);
+   m_freehand->motion(p);
+
+   Invalidate();
 
    CDialogEx::OnLButtonDown(nFlags, point);
 }
@@ -122,6 +140,8 @@ void CHandWriteDlg::OnLButtonDown(UINT nFlags, CPoint point)
 void CHandWriteDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
+   m_freehand->end();
+   Invalidate();
 
    CDialogEx::OnLButtonUp(nFlags, point);
 }
