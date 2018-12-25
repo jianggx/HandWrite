@@ -94,12 +94,6 @@ void CHandWriteDlg::OnPaint()
 
       graph.DrawImage(m_painter->getBitmap(), 0, 0 );
 
-      Gdiplus::Pen bluePen(Gdiplus::Color(255, 0, 0, 255)); // 创建蓝色笔
-      Gdiplus::Pen redPen(Gdiplus::Color(255, 255, 0, 0)); // 创建红色笔
-
-      Gdiplus::RectF rect(100, 100, 20.4, 30.5);
-      graph.DrawEllipse(&bluePen, rect);
-
 		CDialogEx::OnPaint();
 	}  
 }
@@ -116,10 +110,13 @@ HCURSOR CHandWriteDlg::OnQueryDragIcon()
 void CHandWriteDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
-   PPoint p(point.x, point.y, 1);
-   m_freehand->begin(p);
+   if (m_lbuttondown) {
+      PPoint p(point.x, point.y, 1);
+      m_freehand->motion(p);
 
-   Invalidate();
+      Invalidate(false);
+
+   }
 
    CDialogEx::OnMouseMove(nFlags, point);
 }
@@ -128,10 +125,11 @@ void CHandWriteDlg::OnMouseMove(UINT nFlags, CPoint point)
 void CHandWriteDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
+   m_lbuttondown = true;
    PPoint p(point.x, point.y, 1);
    m_freehand->motion(p);
 
-   Invalidate();
+   Invalidate(false);
 
    CDialogEx::OnLButtonDown(nFlags, point);
 }
@@ -140,8 +138,12 @@ void CHandWriteDlg::OnLButtonDown(UINT nFlags, CPoint point)
 void CHandWriteDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
-   m_freehand->end();
-   Invalidate();
+   if (m_lbuttondown) {
+      m_lbuttondown = false;
+      m_freehand->end();
+      Invalidate(false);
+   }
+
 
    CDialogEx::OnLButtonUp(nFlags, point);
 }

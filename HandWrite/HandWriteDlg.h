@@ -26,7 +26,7 @@ public:
 // й╣ож
 protected:
 	HICON m_hIcon;
-
+   bool m_lbuttondown = false;
    std::auto_ptr<Freehand> m_freehand;
    std::auto_ptr<GdiPainter> m_painter;
 

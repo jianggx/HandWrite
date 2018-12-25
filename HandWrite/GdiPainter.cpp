@@ -24,6 +24,8 @@ void GdiPainter::PenMove(const std::vector<PPoint>& pts)
 
       if (m_pendown) {
          Gdiplus::Graphics* pGraphcs = Gdiplus::Graphics::FromImage(m_pBitmap.get());
+         pGraphcs->SetSmoothingMode(Gdiplus::SmoothingMode::SmoothingModeAntiAlias);
+
          m_pen->SetWidth(m_penwidth *(m_lastpoint.pressure() + p.pressure()) / 2.0);
          Gdiplus::PointF f(m_lastpoint.x(), m_lastpoint.y());
          Gdiplus::PointF t(p.x(), p.y());
