@@ -34,7 +34,7 @@ public:
     KisCubicCurve& operator=(const KisCubicCurve& curve);
     bool operator==(const KisCubicCurve& curve) const;
 public:
-    float value(float x) const;
+    double value(double x) const;
     std::vector<PPoint> points() const;
     void setPoints(const std::vector<PPoint>& points);
     void fromString(const std::string& string);

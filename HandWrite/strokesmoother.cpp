@@ -58,7 +58,7 @@ PPoint StrokeSmoother::at(int i) const
 	return _points.at((_pos+i) % _points.size());
 }
 
-void StrokeSmoother::setLastPointPressure(float pressure)
+void StrokeSmoother::setLastPointPressure(double pressure)
 {
    _points.at(_pos % _points.size()).setPressure(pressure);
 }
@@ -81,7 +81,7 @@ PPoint StrokeSmoother::smoothPoint() const
 	// A simple unweighted sliding-average smoother
 	PPoint p = at(0);
 
-	float pressure = p.pressure();
+	double pressure = p.pressure();
 	for(int i=1;i<_points.size();++i) {
 		PPoint pi = at(i);
 		p.rx() += pi.x();
@@ -89,7 +89,7 @@ PPoint StrokeSmoother::smoothPoint() const
 		pressure += pi.pressure();
 	}
 
-	const float c = _points.size();
+	const double c = _points.size();
 	p.rx() /= c;
 	p.ry() /= c;
 	p.setPressure(pressure / c);

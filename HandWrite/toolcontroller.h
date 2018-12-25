@@ -64,11 +64,11 @@ public:
 
 public:
 	//! Start a new stroke
-	void startDrawing(const Point &point, float pressure=1);
+	void startDrawing(const Point &point, double pressure=1);
 
 
 	//! Continue a stroke
-	void continueDrawing(const Point &point, float pressure=1);
+	void continueDrawing(const Point &point, double pressure=1);
 
 
 	//! End a stroke

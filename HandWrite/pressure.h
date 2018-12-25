@@ -32,23 +32,23 @@ struct PressureMapping {
 
 	Mode mode;
 	KisCubicCurve curve;
-	float param;
+	double param;
 
    PressureMapping() : mode(STYLUS), param(1.0) { };
 
-   float mapPressure(float value)
+   double mapPressure(double value)
    {
       switch (mode) {
       case PressureMapping::STYLUS:
          return curve.value(value);
 
       case PressureMapping::DISTANCE: {
-         float d = min(value, param) / param;
+         double d = min(value, param) / param;
          return curve.value(d);
       }
 
       case PressureMapping::VELOCITY:
-         float v = min(value, param) / param;
+         double v = min(value, param) / param;
          return curve.value(v);
       }
       return 0;

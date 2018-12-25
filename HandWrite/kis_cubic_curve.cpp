@@ -41,13 +41,13 @@ public:
      * @return - vector that is storing x[]
      */
     static
-    std::vector<float> calculate(std::vector<float> &a,
-                         std::vector<float> &b,
-                         std::vector<float> &c,
-                         std::vector<float> &f) {
-        std::vector<float> x;
-        std::vector<float> alpha;
-        std::vector<float> beta;
+    std::vector<double> calculate(std::vector<double> &a,
+                         std::vector<double> &b,
+                         std::vector<double> &c,
+                         std::vector<double> &f) {
+        std::vector<double> x;
+        std::vector<double> alpha;
+        std::vector<double> beta;
 
         int i;
         int size = b.size();
@@ -111,14 +111,14 @@ class KisCubicSpline
      */
 
 protected:
-    std::vector<float> m_a;
-    std::vector<float> m_b;
-    std::vector<float> m_c;
-    std::vector<float> m_d;
+    std::vector<double> m_a;
+    std::vector<double> m_b;
+    std::vector<double> m_c;
+    std::vector<double> m_d;
 
-    std::vector<float> m_h;
-    float m_begin;
-    float m_end;
+    std::vector<double> m_h;
+    double m_begin;
+    double m_end;
     int m_intervals;
 
 public:
@@ -152,9 +152,9 @@ public:
         m_a.push_back(a.back().y());
 
 
-        std::vector<float> tri_b;
-        std::vector<float> tri_f;
-        std::vector<float> tri_a; /* equals to @tri_c */
+        std::vector<double> tri_b;
+        std::vector<double> tri_f;
+        std::vector<double> tri_a; /* equals to @tri_c */
 
         for (i = 0; i < intervals - 1; i++) {
             tri_b.push_back(2.*(m_h[i] + m_h[i+1]));
@@ -180,8 +180,8 @@ public:
     /**
      * Get value of precalculated spline in the point @x
      */
-    float getValue(float x) const {
-        float x0;
+    double getValue(double x) const {
+        double x0;
         int i = findRegion(x, x0);
         /* TODO: check for asm equivalent */
         return m_a[i] +
@@ -190,11 +190,11 @@ public:
                (1 / 6.0)* m_d[i] *(x - x0) *(x - x0) *(x - x0);
     }
 
-    float begin() const {
+    double begin() const {
         return m_begin;
     }
 
-    float end() const {
+    double end() const {
         return m_end;
     }
 
@@ -205,7 +205,7 @@ protected:
      * @x0 - out parameter, containing beginning of the region
      * @return - index of the region
      */
-    int findRegion(float x, float &x0) const {
+    int findRegion(double x, double &x0) const {
         int i;
         x0 = m_begin;
         for (i = 0; i < m_intervals; i++) {
@@ -249,11 +249,11 @@ struct KisCubicCurve::Data  {
     mutable bool validSpline;
     mutable std::vector<uint16_t> u16Transfer;
     mutable bool validU16Transfer;
-    mutable std::vector<float> fTransfer;
+    mutable std::vector<double> fTransfer;
     mutable bool validFTransfer;
     void updateSpline();
     void keepSorted();
-    float value(float x);
+    double value(double x);
     void invalidate();
 };
 
@@ -276,7 +276,7 @@ void KisCubicCurve::Data::keepSorted()
 	std::sort(points.begin(), points.end(), pointLessThan);
 }
 
-float qBound(float x0, float x, float x1)
+double qBound(double x0, double x, double x1)
 {
    if (x < x0)
       return x0;
@@ -284,15 +284,15 @@ float qBound(float x0, float x, float x1)
       return x1;
    return x;
 }
-float KisCubicCurve::Data::value(float x)
+double KisCubicCurve::Data::value(double x)
 {
     updateSpline();
     /* Automatically extend non-existing parts of the curve
      * (e.g. before the first point) and cut off big y-values
      */
     x = qBound(spline.begin(), x, spline.end());
-    float y = spline.getValue(x);
-    return qBound(float(0.0), y, float(1.0));
+    double y = spline.getValue(x);
+    return qBound(double(0.0), y, double(1.0));
 }
 
 KisCubicCurve::KisCubicCurve() 
@@ -331,9 +331,9 @@ bool KisCubicCurve::operator==(const KisCubicCurve& curve) const
     return d->points == curve.d->points;
 }
 
-float KisCubicCurve::value(float x) const
+double KisCubicCurve::value(double x) const
 {
-    float value = d->value(x);
+    double value = d->value(x);
     return value;
 }
 

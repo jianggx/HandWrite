@@ -77,7 +77,7 @@ public:
 	 */
    PPoint latestPoint() const { return at(0); }
 
-   void setLastPointPressure(float pressure);
+   void setLastPointPressure(double pressure);
 
 private:
 	PPoint at(int i)const;

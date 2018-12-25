@@ -92,7 +92,7 @@ void ToolController::setSmoothing(int smoothing)
 	}
 }
 
-void ToolController::startDrawing(const Point &point, float pressure)
+void ToolController::startDrawing(const Point &point, double pressure)
 {
    assert(m_activeTool);
 
@@ -108,11 +108,11 @@ void ToolController::startDrawing(const Point &point, float pressure)
 
 }
 
-void ToolController::continueDrawing(const Point &point, float pressure)
+void ToolController::continueDrawing(const Point &point, double pressure)
 {
 	assert(m_activeTool);
    PPoint ppt(point, pressure);
-   float velocity = point.distance(m_lastPoint);
+   double velocity = point.distance(m_lastPoint);
    ppt.setPressure(m_pressureMaping.mapPressure(velocity));
    m_lastPoint = point;
 
