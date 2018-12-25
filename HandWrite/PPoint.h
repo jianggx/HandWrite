@@ -8,7 +8,7 @@ public:
    float m_p; // Ñ¹Á¦
 
    PPoint() :m_x(0), m_y(0), m_p(0) {};
-   PPoint(float x, float y, float p) :m_x(x), m_y(y), m_p(p) {};
+   PPoint(float x, float y, float p=1.0) :m_x(x), m_y(y), m_p(p) {};
    ~PPoint() {};
 
    float x() const { return m_x; }

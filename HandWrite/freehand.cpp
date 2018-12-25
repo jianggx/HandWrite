@@ -19,49 +19,35 @@
 #include"stdafx.h"
 #include "freehand.h"
 
-#include "Painter.h"
+#include "toolcontroller.h"
 
-Freehand::Freehand(Painter &painter)
-	: Tool(painter, FREEHAND)
+Freehand::Freehand(ToolController &toolcontroller)
+: Tool(toolcontroller, FREEHAND)
 {
-   m_smoother.setSmoothing(10);
+
 }
 
 void Freehand::pen_move(const PPoint& point) const
 {
    std::vector<PPoint> v;
    v.push_back(point);
-   painter.PenMove(v);
+   toolController().painter().PenMove(v);
 }
+
 void Freehand::begin(const PPoint& point)
 {
-   m_smoother.reset();
-   m_smoother.addPoint(point);
-
    pen_move(point);
 }
 
 void Freehand::motion(const PPoint& point)
 {
-   m_smoother.addPoint(point);
-
-   if (m_smoother.hasSmoothPoint()) {
-      pen_move(m_smoother.smoothPoint());
-   }
-
+	pen_move(point);
 }
 
 void Freehand::end()
 {
-   // Drain any remaining points from the smoothing buffer
-   if (m_smoother.hasSmoothPoint())
-      m_smoother.removePoint();
-   while (m_smoother.hasSmoothPoint()) {
-      pen_move(m_smoother.smoothPoint());
-      m_smoother.removePoint();
-   }
 
-   painter.PenUp();
+	toolController().painter().PenUp();
 }
 
 

@@ -32,6 +32,7 @@
 
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
 
+#include <memory>
 #include<vector>
 #include<gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")

@@ -21,12 +21,15 @@
 
 #include "tool.h"
 #include"strokesmoother.h"
+#include"pressure.h"
+
+class ToolController;
 
 //! Freehand brush tool
 class Freehand : public Tool
 {
 public:
-	Freehand(Painter &painter);
+	Freehand(ToolController &toolControl);
 
 	void begin(const PPoint& point) override;
 	void motion(const PPoint& point) override;
@@ -37,7 +40,6 @@ public:
 private:
    void pen_move(const PPoint& point) const;
 
-   StrokeSmoother m_smoother;
 };
 
 

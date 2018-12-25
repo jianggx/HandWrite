@@ -31,7 +31,7 @@
  */
 
 
-class Painter;
+class ToolController;
 
 /**
  * @brief Base class for all tools
@@ -42,8 +42,8 @@ class Tool
 public:
 	enum Type {FREEHAND,  _LASTTOOL};
 
-	Tool(Painter &painter, Type type)
-		: painter(painter), m_type(type)
+	Tool(ToolController &toolControl, Type type)
+		: m_toolController(toolControl), m_type(type)
 		{}
 	virtual ~Tool() {}
 
@@ -73,10 +73,10 @@ public:
 	//! Does this tool allow stroke smoothing to be used?
 	virtual bool allowSmoothing() const { return false; }
 
-   Painter &getPainter() { return painter; }
+	ToolController &toolController()const { return m_toolController; }
 
 protected:
-   Painter &painter;
+	ToolController &m_toolController;
 
 private:
 	const Type m_type;
