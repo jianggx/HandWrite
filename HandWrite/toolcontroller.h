@@ -26,8 +26,10 @@
 
 
 class PPoint;
+class Point;
 class Tool;
 class Painter;
+class PressureMapping;
 
 /**
  * @brief The ToolController dispatches user input to the currently active tool
@@ -35,11 +37,12 @@ class Painter;
 class ToolController 
 {
 public:
-	ToolController();
-	~ToolController();
+   ToolController();
+   ToolController(Painter* painter);
+   ~ToolController();
 
 	void setActiveTool(Tool::Type tool);
-	Tool::Type activeTool() const;
+   Tool* activeTool() const;
 
 	//void setActiveLayer(int id);
 	//int activeLayer() const { return m_activeLayer; }
@@ -61,11 +64,11 @@ public:
 
 public:
 	//! Start a new stroke
-	void startDrawing(const PPoint &point);
+	void startDrawing(const Point &point, float pressure=1);
 
 
 	//! Continue a stroke
-	void continueDrawing(const PPoint &point);
+	void continueDrawing(const Point &point, float pressure=1);
 
 
 	//! End a stroke
@@ -87,7 +90,9 @@ private:
 
 	int m_smoothing;
 	StrokeSmoother m_smoother;
-	std::auto_ptr<Painter> m_painter;
+	Painter* m_painter;
+   PressureMapping m_pressureMaping;
+   Point m_lastPoint;
 };
 
 #endif // TOOLCONTROLLER_H

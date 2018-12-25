@@ -10,6 +10,7 @@
 #include "pressure.h"
 #include "GdiPainter.h"
 #include"PPoint.h"
+#include"toolcontroller.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -58,7 +59,7 @@ BOOL CHandWriteDlg::OnInitDialog()
    CRect rect;
    GetClientRect(&rect);
    m_painter.reset(new GdiPainter(rect.Width(), rect.Height()));
-   m_freehand.reset(new Freehand(*m_painter));
+   m_toolController.reset(new ToolController(m_painter.get()));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -111,8 +112,8 @@ void CHandWriteDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
    if (m_lbuttondown) {
-      PPoint p(point.x, point.y, 1);
-      m_freehand->motion(p);
+      Point p(point.x, point.y);
+      m_toolController->continueDrawing(p);
 
       Invalidate(false);
 
@@ -126,8 +127,8 @@ void CHandWriteDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
    m_lbuttondown = true;
-   PPoint p(point.x, point.y, 1);
-   m_freehand->motion(p);
+   Point p(point.x, point.y);
+   m_toolController->continueDrawing(p);
 
    Invalidate(false);
 
@@ -140,7 +141,7 @@ void CHandWriteDlg::OnLButtonUp(UINT nFlags, CPoint point)
    // TODO: 在此添加消息处理程序代码和/或调用默认值
    if (m_lbuttondown) {
       m_lbuttondown = false;
-      m_freehand->end();
+      m_toolController->endDrawing();
       Invalidate(false);
    }
 

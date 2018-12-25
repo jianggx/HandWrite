@@ -20,6 +20,7 @@
 #include "freehand.h"
 
 #include "toolcontroller.h"
+#include"Painter.h"
 
 Freehand::Freehand(ToolController &toolcontroller)
 : Tool(toolcontroller, FREEHAND)

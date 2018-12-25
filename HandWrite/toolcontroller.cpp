@@ -16,40 +16,44 @@
    You should have received a copy of the GNU General Public License
    along with Drawpile.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include"stdafx.h"
 #include "toolcontroller.h"
-
-#include "colorpicker.h"
-#include "laser.h"
-#include "selection.h"
-#include "shapetools.h"
-#include "beziertool.h"
-#include "floodfill.h"
+#include "GdiPainter.h"
+#include"pressure.h"
 
 #include "PPoint.h"
-#include "core/layerstack.h"
-#include "core/annotationmodel.h"
-#include "canvas/canvasmodel.h"
-#include "canvas/statetracker.h"
+
 
 
 ToolController::ToolController()
+   :
+   m_toolbox{},
+   m_activeTool(nullptr),
+   m_painter(nullptr),
+   m_smoothing(10)
+{
+}
+
+ToolController::ToolController(Painter* painter)
 	: 
 	m_toolbox{},
 	m_activeTool(nullptr),
-	m_smoothing(10)
+	m_smoothing(10),
+   m_painter(painter)
 {
 
 	registerTool(new Freehand(*this)); // eraser is a specialized freehand tool
 
+   m_smoother.setSmoothing(m_smoothing);
 	m_activeTool = m_toolbox[Tool::FREEHAND];
-	m_pai
+   m_pressureMaping.mode = PressureMapping::Mode::VELOCITY;
+   m_pressureMaping.param = 10;
 }
 
 void ToolController::registerTool(Tool *tool)
 {
-	Q_ASSERT(tool->type() >= 0 && tool->type() < Tool::_LASTTOOL);
-	Q_ASSERT(m_toolbox[int(tool->type())] == nullptr);
+   assert(tool->type() >= 0 && tool->type() < Tool::_LASTTOOL);
+	assert(m_toolbox[int(tool->type())] == nullptr);
 	m_toolbox[tool->type()] = tool;
 }
 
@@ -59,81 +63,24 @@ ToolController::~ToolController()
 		delete t;
 }
 
-Tool *ToolController::getTool(Tool::Type type)
+Tool *ToolController::activeTool()const
 {
-	Q_ASSERT(type >= 0 && type < Tool::_LASTTOOL);
-	Tool *t = m_toolbox[type];
-	Q_ASSERT(t);
-	return t;
+	return m_activeTool;
 }
 
 void ToolController::setActiveTool(Tool::Type tool)
 {
-	if(activeTool() != tool) {
-		m_activeTool->cancelMultipart();
 		m_activeTool = getTool(tool);
-		emit activeToolChanged(tool);
-		emit toolCursorChanged(activeToolCursor());
-	}
 }
 
-void ToolController::setActiveAnnotation(int id)
+Tool *ToolController::getTool(Tool::Type type)
 {
-	if(m_activeAnnotation != id) {
-		m_activeAnnotation = id;
-		emit activeAnnotationChanged(id);
-	}
+   assert(type >= 0 && type < Tool::_LASTTOOL);
+   assert(m_toolbox[int(type)] == nullptr);
+   return m_toolbox[type];
+
 }
 
-Tool::Type ToolController::activeTool() const
-{
-	Q_ASSERT(m_activeTool);
-	return m_activeTool->type();
-}
-
-QCursor ToolController::activeToolCursor() const
-{
-	Q_ASSERT(m_activeTool);
-	return m_activeTool->cursor();
-}
-
-void ToolController::setActiveLayer(int id)
-{
-	if(m_activeLayer != id) {
-		m_activeLayer = id;
-		if(m_model)
-			m_model->layerStack()->setViewLayer(id);
-
-		emit activeLayerChanged(id);
-	}
-}
-
-void ToolController::setActiveBrush(const paintcore::Brush &b)
-{
-	m_activebrush = b;
-	emit activeBrushChanged(b);
-}
-
-void ToolController::setModel(canvas::CanvasModel *model)
-{
-	if(m_model != model) {
-		m_model = model;
-
-		connect(m_model->stateTracker(), &canvas::StateTracker::myAnnotationCreated, this, &ToolController::setActiveAnnotation);
-		connect(m_model->layerStack()->annotations(), &paintcore::AnnotationModel::rowsAboutToBeRemoved, this, &ToolController::onAnnotationRowDelete);
-
-		emit modelChanged(model);
-	}
-}
-
-void ToolController::onAnnotationRowDelete(const QModelIndex&, int first, int last)
-{
-	for(int i=first;i<=last;++i) {
-		const QModelIndex &a = m_model->layerStack()->annotations()->index(i);
-		if(a.data(paintcore::AnnotationModel::IdRole).toInt() == activeAnnotation())
-			setActiveAnnotation(0);
-	}
-}
 
 void ToolController::setSmoothing(int smoothing)
 {
@@ -141,140 +88,58 @@ void ToolController::setSmoothing(int smoothing)
 		m_smoothing = smoothing;
 		if(smoothing>0)
 			m_smoother.setSmoothing(smoothing);
-		emit smoothingChanged(smoothing);
 	}
 }
 
-void ToolController::startDrawing(const QPointF &point, qreal pressure, bool right, float zoom)
+void ToolController::startDrawing(const Point &point, float pressure)
 {
-	Q_ASSERT(m_activeTool);
+   assert(m_activeTool);
 
-	if(!m_model) {
-		qWarning("ToolController::startDrawing: no model set!");
-		return;
-	}
+   m_lastPoint = point;
 
+   PPoint ppt(point, pressure);
 	if(m_smoothing>0 && m_activeTool->allowSmoothing()) {
 		m_smoother.reset();
-		m_smoother.addPoint(paintcore::Point(point, pressure));
+		m_smoother.addPoint(ppt);
 	}
 	// TODO handle hasSmoothPoint() == false
-	m_activeTool->begin(paintcore::Point(point, pressure), right, zoom);
+	m_activeTool->begin(ppt);
 
-	if(!m_activeTool->isMultipart())
-		m_model->stateTracker()->setLocalDrawingInProgress(true);
 }
 
-void ToolController::continueDrawing(const QPointF &point, qreal pressure, bool shift, bool alt)
+void ToolController::continueDrawing(const Point &point, float pressure)
 {
-	Q_ASSERT(m_activeTool);
-
-	if(!m_model) {
-		qWarning("ToolController::continueDrawing: no model set!");
-		return;
-	}
+	assert(m_activeTool);
+   PPoint ppt(point, pressure);
+   float velocity = point.distance(m_lastPoint);
+   m_lastPoint = point;
+   ppt.setPressure(m_pressureMaping.mapPressure(velocity));
 
 	if(m_smoothing>0 && m_activeTool->allowSmoothing()) {
-		m_smoother.addPoint(paintcore::Point(point, pressure));
+		m_smoother.addPoint(ppt);
 
 		if(m_smoother.hasSmoothPoint()) {
-			m_activeTool->motion(m_smoother.smoothPoint(), shift, alt);
+
+			m_activeTool->motion(m_smoother.smoothPoint());
 		}
 
 	} else {
-		m_activeTool->motion(paintcore::Point(point, pressure), shift, alt);
+		m_activeTool->motion(ppt);
 	}
-
-	m_prevShift = shift;
-	m_prevAlt = alt;
 }
 
-void ToolController::hoverDrawing(const QPointF &point)
-{
-	Q_ASSERT(m_activeTool);
-	if(!m_model)
-		return;
-
-	m_activeTool->hover(point);
-}
 
 void ToolController::endDrawing()
 {
-	Q_ASSERT(m_activeTool);
-
-	if(!m_model) {
-		qWarning("ToolController::endDrawing: no model set!");
-		return;
-	}
-
+   assert(m_activeTool);
 	// Drain any remaining points from the smoothing buffer
 	if(m_smoothing>0 && m_activeTool->allowSmoothing()) {
 		if(m_smoother.hasSmoothPoint())
 			m_smoother.removePoint();
 		while(m_smoother.hasSmoothPoint()) {
-			m_activeTool->motion(m_smoother.smoothPoint(),
-				m_prevShift, m_prevAlt);
+			m_activeTool->motion(m_smoother.smoothPoint());
 			m_smoother.removePoint();
 		}
 	}
-
 	m_activeTool->end();
-	m_model->stateTracker()->setLocalDrawingInProgress(false);
 }
-
-bool ToolController::undoMultipartDrawing()
-{
-	Q_ASSERT(m_activeTool);
-
-	if(!m_model) {
-		qWarning("ToolController::undoMultipartDrawing: no model set!");
-		return false;
-	}
-
-	if(!m_activeTool->isMultipart())
-		return false;
-
-	m_activeTool->undoMultipart();
-	return true;
-}
-
-bool ToolController::isMultipartDrawing() const
-{
-	Q_ASSERT(m_activeTool);
-
-	return m_activeTool->isMultipart();
-}
-
-void ToolController::finishMultipartDrawing()
-{
-	Q_ASSERT(m_activeTool);
-
-	if(!m_model) {
-		qWarning("ToolController::finishMultipartDrawing: no model set!");
-		return;
-	}
-
-	if(m_model->stateTracker()->isLayerLocked(m_activeLayer)) {
-		// It is possible for the active layer to become locked
-		// before the user has finished multipart drawing.
-		qWarning("Cannot finish multipart drawing: active layer is locked!");
-		return;
-	}
-
-	m_smoother.reset();
-	m_activeTool->finishMultipart();
-}
-
-void ToolController::cancelMultipartDrawing()
-{
-	Q_ASSERT(m_activeTool);
-
-	if(!m_model) {
-		qWarning("ToolController::cancelMultipartDrawing: no model set!");
-		return;
-	}
-
-	m_smoother.reset();
-	m_activeTool->cancelMultipart();
-}
-

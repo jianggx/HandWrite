@@ -4,7 +4,7 @@
 
 #pragma once
 
-class Freehand;
+class ToolController;
 class GdiPainter;
 
 // CHandWriteDlg ¶Ô»°¿ò
@@ -27,7 +27,7 @@ public:
 protected:
 	HICON m_hIcon;
    bool m_lbuttondown = false;
-   std::auto_ptr<Freehand> m_freehand;
+   std::auto_ptr<ToolController> m_toolController;
    std::auto_ptr<GdiPainter> m_painter;
 
    CDC m_dcMemory;
