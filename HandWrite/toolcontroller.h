@@ -68,7 +68,7 @@ public:
 
 
 	//! Continue a stroke
-	void continueDrawing(const Point &point, double pressure=1);
+	void continueDrawing(const Point &point, float pressure=1);
 
 
 	//! End a stroke
