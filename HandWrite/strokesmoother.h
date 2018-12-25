@@ -22,6 +22,8 @@
 #include "PPoint.h"
 #include<vector>
 
+class ToolController;
+
 class StrokeSmoother
 {
 public:
@@ -73,11 +75,14 @@ public:
 	 * @brief Get the last point added to the smoother
 	 * @return
 	 */
-	PPoint latestPoint() const { return at(0); }
+   PPoint latestPoint() const { return at(0); }
+
+   void setLastPointPressure(float pressure);
 
 private:
-	PPoint at(int i) const;
+	PPoint at(int i)const;
 
+   friend class ToolController;
 	std::vector<PPoint> _points;
 	int _pos;
 	int _count; ///< Number of actually sampled points in the buffer

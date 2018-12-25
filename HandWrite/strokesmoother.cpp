@@ -58,6 +58,11 @@ PPoint StrokeSmoother::at(int i) const
 	return _points.at((_pos+i) % _points.size());
 }
 
+void StrokeSmoother::setLastPointPressure(float pressure)
+{
+   _points.at(_pos % _points.size()).setPressure(pressure);
+}
+
 void StrokeSmoother::reset()
 {
 	_count=0;

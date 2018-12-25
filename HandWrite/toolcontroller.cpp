@@ -38,7 +38,7 @@ ToolController::ToolController(Painter* painter)
 	: 
 	m_toolbox{},
 	m_activeTool(nullptr),
-	m_smoothing(10),
+	m_smoothing(5),
    m_painter(painter)
 {
 
@@ -47,7 +47,7 @@ ToolController::ToolController(Painter* painter)
    m_smoother.setSmoothing(m_smoothing);
 	m_activeTool = m_toolbox[Tool::FREEHAND];
    m_pressureMaping.mode = PressureMapping::Mode::VELOCITY;
-   m_pressureMaping.param = 10;
+   m_pressureMaping.param = 100;
    m_pressureMaping.curve.fromString("0,1;1,0");
 }
 
@@ -137,6 +137,9 @@ void ToolController::endDrawing()
 	if(m_smoothing>0 && m_activeTool->allowSmoothing()) {
 		if(m_smoother.hasSmoothPoint())
 			m_smoother.removePoint();
+
+      // Î²²¿´¦Àí
+      m_smoother.setLastPointPressure(0);
 		while(m_smoother.hasSmoothPoint()) {
 			m_activeTool->motion(m_smoother.smoothPoint());
 			m_smoother.removePoint();

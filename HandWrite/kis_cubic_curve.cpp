@@ -388,15 +388,15 @@ void KisCubicCurve::fromString(const std::string& string)
    std::vector<PPoint> points;
 
    for (const std::string & pair : data) {
-      if (pair.find(',') > -1) {
+      if (pair.find_first_of(std::string(","), 0) != std::string::npos) {
          PPoint p;
-         data.clear();
-         StringSplit(data, pair, std::string(","));
-         if (data.size() != 2)
+         std::vector<std::string> data2;
+         StringSplit(data2, pair, std::string(","));
+         if (data2.size() != 2)
             continue;
 
-         p.rx() = qBound(0.0, atof(data[0].c_str()), 1.0);
-         p.ry() = qBound(0.0, atof(data[1].c_str()), 1.0);
+         p.rx() = qBound(0.0, atof(data2[0].c_str()), 1.0);
+         p.ry() = qBound(0.0, atof(data2[1].c_str()), 1.0);
          points.push_back(p);
       }
    }
