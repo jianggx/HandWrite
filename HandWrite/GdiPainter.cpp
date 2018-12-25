@@ -9,6 +9,9 @@ GdiPainter::GdiPainter(int w, int h)  {
    m_pen->SetColor(Gdiplus::Color(255, 0, 0, 255));
    m_pen->SetWidth(5);
    m_penwidth = 5;
+
+   m_pGraphics = Gdiplus::Graphics::FromImage(m_pBitmap.get());
+   m_pGraphics->SetSmoothingMode(Gdiplus::SmoothingMode::SmoothingModeAntiAlias);
 };
 
 
@@ -23,13 +26,13 @@ void GdiPainter::PenMove(const std::vector<PPoint>& pts)
       //PPoint p(pp.x() / 4.0, pp.y() / 4.0, pp.pressure() / 65535.0);
 
       if (m_pendown) {
-         Gdiplus::Graphics* pGraphcs = Gdiplus::Graphics::FromImage(m_pBitmap.get());
-         pGraphcs->SetSmoothingMode(Gdiplus::SmoothingMode::SmoothingModeAntiAlias);
+         //Gdiplus::Graphics* pGraphcs = Gdiplus::Graphics::FromImage(m_pBitmap.get());
+         //pGraphcs->SetSmoothingMode(Gdiplus::SmoothingMode::SmoothingModeAntiAlias);
 
          m_pen->SetWidth(m_penwidth *(m_lastpoint.pressure() + p.pressure()) / 2.0);
          Gdiplus::PointF f(m_lastpoint.x(), m_lastpoint.y());
          Gdiplus::PointF t(p.x(), p.y());
-         pGraphcs->DrawLine(m_pen.get(), f, t);
+         m_pGraphics->DrawLine(m_pen.get(), f, t);
       }
       else {
          m_pendown = true;
