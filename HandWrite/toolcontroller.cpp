@@ -48,6 +48,7 @@ ToolController::ToolController(Painter* painter)
 	m_activeTool = m_toolbox[Tool::FREEHAND];
    m_pressureMaping.mode = PressureMapping::Mode::VELOCITY;
    m_pressureMaping.param = 10;
+   m_pressureMaping.curve.fromString("0,1;1,0");
 }
 
 void ToolController::registerTool(Tool *tool)
@@ -97,7 +98,7 @@ void ToolController::startDrawing(const Point &point, float pressure)
 
    m_lastPoint = point;
 
-   PPoint ppt(point, pressure);
+   PPoint ppt(point, 0);
 	if(m_smoothing>0 && m_activeTool->allowSmoothing()) {
 		m_smoother.reset();
 		m_smoother.addPoint(ppt);
@@ -112,8 +113,8 @@ void ToolController::continueDrawing(const Point &point, float pressure)
 	assert(m_activeTool);
    PPoint ppt(point, pressure);
    float velocity = point.distance(m_lastPoint);
-   m_lastPoint = point;
    ppt.setPressure(m_pressureMaping.mapPressure(velocity));
+   m_lastPoint = point;
 
 	if(m_smoothing>0 && m_activeTool->allowSmoothing()) {
 		m_smoother.addPoint(ppt);
