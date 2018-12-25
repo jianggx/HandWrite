@@ -6,3 +6,4 @@ ipch/
 **/Debug/
 *.opendb
 *.aps
+*.db
