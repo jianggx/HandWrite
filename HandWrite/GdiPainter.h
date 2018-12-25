@@ -17,6 +17,7 @@ private:
    std::auto_ptr<Gdiplus::Bitmap> m_pBitmap;
    Gdiplus::Graphics* m_pGraphics;
    bool m_pendown;
+   bool m_penmoved;
    int m_penwidth;
    PPoint m_lastpoint;
    std::auto_ptr<Gdiplus::Pen> m_pen;
