@@ -26,44 +26,46 @@
 
 
 ToolController::ToolController()
-   :
-   m_toolbox{},
-   m_activeTool(nullptr),
-   m_painter(nullptr),
-   m_smoothing(10)
+	:
+	m_toolbox{},
+	m_activeTool(nullptr),
+	m_painter(nullptr),
+	m_smoothing(10),
+	m_drawBegined(false)
 {
 }
 
 ToolController::ToolController(Painter* painter)
-	: 
+	:
 	m_toolbox{},
 	m_activeTool(nullptr),
 	m_smoothing(3),
-   m_painter(painter)
+	m_painter(painter),
+	m_drawBegined(false)
 {
 
 	registerTool(new Freehand(*this)); // eraser is a specialized freehand tool
 
-   m_smoother.setSmoothing(m_smoothing);
+	m_smoother.setSmoothing(m_smoothing);
 	m_activeTool = m_toolbox[Tool::FREEHAND];
-   m_pressureMaping.mode = PressureMapping::Mode::VELOCITY;
-   m_pressureMaping.param = 200;
-   m_pressureMaping.curve.fromString("0,1;1,0");
+	m_pressureMaping.mode = PressureMapping::Mode::VELOCITY;
+	m_pressureMaping.param = 80;
+	m_pressureMaping.curve.fromString("0,1;1,0");
 
-   m_painter->setPenWidth(10);
+	m_painter->setPenWidth(10);
 
 }
 
 void ToolController::registerTool(Tool *tool)
 {
-   assert(tool->type() >= 0 && tool->type() < Tool::_LASTTOOL);
+	assert(tool->type() >= 0 && tool->type() < Tool::_LASTTOOL);
 	assert(m_toolbox[int(tool->type())] == nullptr);
 	m_toolbox[tool->type()] = tool;
 }
 
 ToolController::~ToolController()
 {
-	for(Tool *t : m_toolbox)
+	for (Tool *t : m_toolbox)
 		delete t;
 }
 
@@ -74,60 +76,65 @@ Tool *ToolController::activeTool()const
 
 void ToolController::setActiveTool(Tool::Type tool)
 {
-		m_activeTool = getTool(tool);
+	m_activeTool = getTool(tool);
 }
 
 Tool *ToolController::getTool(Tool::Type type)
 {
-   assert(type >= 0 && type < Tool::_LASTTOOL);
-   assert(m_toolbox[int(type)] == nullptr);
-   return m_toolbox[type];
+	assert(type >= 0 && type < Tool::_LASTTOOL);
+	assert(m_toolbox[int(type)] == nullptr);
+	return m_toolbox[type];
 
 }
 
 
 void ToolController::setSmoothing(int smoothing)
 {
-	if(m_smoothing != smoothing) {
+	if (m_smoothing != smoothing) {
 		m_smoothing = smoothing;
-		if(smoothing>0)
+		if (smoothing > 0)
 			m_smoother.setSmoothing(smoothing);
 	}
 }
 
 void ToolController::startDrawing(const Point &point, double pressure)
 {
-   assert(m_activeTool);
+	assert(m_activeTool);
 
-   m_lastPoint = point;
-
-   PPoint ppt(point, 0);
-	if(m_smoothing>0 && m_activeTool->allowSmoothing()) {
-		m_smoother.reset();
-		m_smoother.addPoint(ppt);
-	}
-	// TODO handle hasSmoothPoint() == false
-	m_activeTool->begin(ppt);
+	m_lastPoint = point;
+	m_drawBegined = false;
 
 }
 
 void ToolController::continueDrawing(const Point &point, double pressure)
 {
 	assert(m_activeTool);
-   PPoint ppt(point, pressure);
-   double velocity = point.distance(m_lastPoint);
-   ppt.setPressure(m_pressureMaping.mapPressure(velocity));
-   m_lastPoint = point;
+	PPoint ppt(point, pressure);
+	double velocity = point.distance(m_lastPoint);
+	if (!m_drawBegined) {
+		PPoint ppt(m_lastPoint, m_pressureMaping.mapPressure(velocity));
+		if (m_smoothing > 0 && m_activeTool->allowSmoothing()) {
+			m_smoother.reset();
+			m_smoother.addPoint(ppt);
+		}
+		// TODO handle hasSmoothPoint() == false
+		m_activeTool->begin(ppt);
+		m_drawBegined = true;
+	}
 
-	if(m_smoothing>0 && m_activeTool->allowSmoothing()) {
+	ppt.setPressure(m_pressureMaping.mapPressure(velocity));
+	m_lastPoint = point;
+
+	if (m_smoothing > 0 && m_activeTool->allowSmoothing()) {
 		m_smoother.addPoint(ppt);
 
-		if(m_smoother.hasSmoothPoint()) {
+		if (m_smoother.hasSmoothPoint()) {
 
 			m_activeTool->motion(m_smoother.smoothPoint());
 		}
 
-	} else {
+	}
+	else {
 		m_activeTool->motion(ppt);
 	}
 }
@@ -135,15 +142,15 @@ void ToolController::continueDrawing(const Point &point, double pressure)
 
 void ToolController::endDrawing()
 {
-   assert(m_activeTool);
+	assert(m_activeTool);
 	// Drain any remaining points from the smoothing buffer
-	if(m_smoothing>0 && m_activeTool->allowSmoothing()) {
-		if(m_smoother.hasSmoothPoint())
+	if (m_smoothing > 0 && m_activeTool->allowSmoothing()) {
+		if (m_smoother.hasSmoothPoint())
 			m_smoother.removePoint();
 
-      // 尾部处理
-      m_smoother.setLastPointPressure(0);
-		while(m_smoother.hasSmoothPoint()) {
+		// 尾部处理
+		m_smoother.setLastPointPressure(0);
+		while (m_smoother.hasSmoothPoint()) {
 			m_activeTool->motion(m_smoother.smoothPoint());
 			m_smoother.removePoint();
 		}

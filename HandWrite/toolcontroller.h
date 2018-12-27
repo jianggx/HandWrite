@@ -93,6 +93,7 @@ private:
 	Painter* m_painter;
    PressureMapping m_pressureMaping;
    Point m_lastPoint;
+   bool m_drawBegined;
 };
 
 #endif // TOOLCONTROLLER_H
