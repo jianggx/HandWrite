@@ -36,6 +36,8 @@
 
 #include <memory>
 #include<vector>
+#include <algorithm>
+
 #include<gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 

@@ -38,7 +38,7 @@ ToolController::ToolController(Painter* painter)
 	: 
 	m_toolbox{},
 	m_activeTool(nullptr),
-	m_smoothing(5),
+	m_smoothing(3),
    m_painter(painter)
 {
 
@@ -47,8 +47,11 @@ ToolController::ToolController(Painter* painter)
    m_smoother.setSmoothing(m_smoothing);
 	m_activeTool = m_toolbox[Tool::FREEHAND];
    m_pressureMaping.mode = PressureMapping::Mode::VELOCITY;
-   m_pressureMaping.param = 800;
+   m_pressureMaping.param = 200;
    m_pressureMaping.curve.fromString("0,1;1,0");
+
+   m_painter->setPenWidth(10);
+
 }
 
 void ToolController::registerTool(Tool *tool)
