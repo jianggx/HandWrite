@@ -37,7 +37,7 @@ void Freehand::pen_move(const PPoint& point) const
 
 void Freehand::begin(const PPoint& point)
 {
-   pen_move(point);
+	toolController().painter().PenDown(point);
 }
 
 void Freehand::motion(const PPoint& point)

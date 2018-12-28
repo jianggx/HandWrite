@@ -32,7 +32,7 @@ void GdiPainter::drawSoftLine(const PPoint& from, const PPoint& to)
 	dy = dy / dist;
 	const double dp = (to.pressure() - from.pressure()) / dist;
 
-	const double spacing_base = max(1.0, m_penwidth/2);
+	const double spacing_base = max(1.0, m_penwidth/5);
 
 	double i=0;
 
@@ -48,6 +48,14 @@ void GdiPainter::drawSoftLine(const PPoint& from, const PPoint& to)
 	}
 }
 
+void GdiPainter::PenDown(const PPoint& point)
+{
+	m_pendown = true;
+	m_penmoved = false;
+	m_lastpoint = point;
+
+}
+
 
 void GdiPainter::PenMove(const std::vector<PPoint>& pts)
 {
@@ -59,10 +67,6 @@ void GdiPainter::PenMove(const std::vector<PPoint>& pts)
 		  m_penmoved = true;
 		  drawSoftLine(m_lastpoint, p);
       }
-      else {
-         m_pendown = true;
-		 m_penmoved = false;
-	  }
       m_lastpoint = p;
    }
 }

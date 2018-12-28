@@ -8,6 +8,7 @@ public:
    GdiPainter(int w, int h);
    virtual ~GdiPainter();
 
+   virtual void PenDown(const PPoint& point);
    virtual void PenMove(const std::vector<PPoint>& pts);
    virtual void PenUp();
 

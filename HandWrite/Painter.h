@@ -7,6 +7,7 @@ class Painter
 public:
    Painter():m_penwidth(5){};
    virtual ~Painter() {};
+   virtual void PenDown(const PPoint& point)=0;
    virtual void PenMove(const std::vector<PPoint>& pts)=0;
    virtual void PenUp()=0;
    void setPenWidth(double penwidth) { m_penwidth = penwidth; }

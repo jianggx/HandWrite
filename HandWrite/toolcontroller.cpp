@@ -39,20 +39,20 @@ ToolController::ToolController(Painter* painter)
 	:
 	m_toolbox{},
 	m_activeTool(nullptr),
-	m_smoothing(3),
 	m_painter(painter),
 	m_drawBegined(false)
 {
 
 	registerTool(new Freehand(*this)); // eraser is a specialized freehand tool
 
-	m_smoother.setSmoothing(m_smoothing);
 	m_activeTool = m_toolbox[Tool::FREEHAND];
 	m_pressureMaping.mode = PressureMapping::Mode::VELOCITY;
-	m_pressureMaping.param = 80;
 	m_pressureMaping.curve.fromString("0,1;1,0");
 
-	m_painter->setPenWidth(10);
+	m_smoothing = 5;
+	m_smoother.setSmoothing(m_smoothing);
+	m_pressureMaping.param = 80;
+	m_painter->setPenWidth(5);
 
 }
 
@@ -143,6 +143,16 @@ void ToolController::continueDrawing(const Point &point, double pressure)
 void ToolController::endDrawing()
 {
 	assert(m_activeTool);
+	if (!m_drawBegined) //只绘制单点
+	{
+		PPoint ppt(m_lastPoint,0.5);
+		if (m_smoothing > 0 && m_activeTool->allowSmoothing()) {
+			m_smoother.reset();
+			m_smoother.addPoint(ppt);
+		}
+		// TODO handle hasSmoothPoint() == false
+		m_activeTool->begin(ppt);
+	}
 	// Drain any remaining points from the smoothing buffer
 	if (m_smoothing > 0 && m_activeTool->allowSmoothing()) {
 		if (m_smoother.hasSmoothPoint())
