@@ -30,6 +30,8 @@ protected:
    std::auto_ptr<ToolController> m_toolController;
    std::auto_ptr<GdiPainter> m_painter;
 
+   std::vector<CPoint> mousePts;
+
    CDC m_dcMemory;
 
 	// 生成的消息映射函数

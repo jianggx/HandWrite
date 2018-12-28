@@ -95,6 +95,11 @@ void CHandWriteDlg::OnPaint()
 
       graph.DrawImage(m_painter->getBitmap(), 0, 0 );
 
+	  //for (auto& p : mousePts)
+	  //{
+		//  Gdiplus::Pen ptPen(Gdiplus::Color::Green, 3);
+	//	  graph.DrawEllipse(&ptPen, p.x, p.y, 5, 5);
+	  //}
 		CDialogEx::OnPaint();
 	}  
 }
@@ -112,10 +117,12 @@ void CHandWriteDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
    if (m_lbuttondown) {
+	   mousePts.push_back(point);
+
       Point p(point.x, point.y);
       m_toolController->continueDrawing(p);
 
-      Invalidate(false);
+      //Invalidate(false);
 
    }
 
@@ -127,10 +134,12 @@ void CHandWriteDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
    m_lbuttondown = true;
-   Point p(point.x, point.y);
-   m_toolController->continueDrawing(p);
+   mousePts.push_back(point);
 
-   Invalidate(false);
+   Point p(point.x, point.y);
+   m_toolController->startDrawing(p);
+
+   //Invalidate(false);
 
    CDialogEx::OnLButtonDown(nFlags, point);
 }
@@ -140,6 +149,8 @@ void CHandWriteDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
    // TODO: 在此添加消息处理程序代码和/或调用默认值
    if (m_lbuttondown) {
+	   mousePts.push_back(point);
+
       m_lbuttondown = false;
       m_toolController->endDrawing();
       Invalidate(false);
