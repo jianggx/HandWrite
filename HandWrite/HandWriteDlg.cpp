@@ -58,7 +58,15 @@ BOOL CHandWriteDlg::OnInitDialog()
    //m_graphics.reset(new Gdiplus::Graphics(dc.m_hDC)); // 创建图形对象
    CRect rect;
    GetClientRect(&rect);
-   m_painter.reset(new GdiPainter(rect.Width(), rect.Height()));
+
+
+   CDC *dc = GetDC();
+   m_memDC.CreateCompatibleDC(dc);
+   m_membmp.CreateCompatibleBitmap(dc, rect.Width(), rect.Height());
+   m_memDC.SelectObject(&m_membmp);
+   m_memDC.FillSolidRect(0, 0, rect.Width(), rect.Height(), RGB(255, 255, 255));
+
+   m_painter.reset(new GdiPainter(m_memDC.m_hDC));
    m_toolController.reset(new ToolController(m_painter.get()));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -90,17 +98,12 @@ void CHandWriteDlg::OnPaint()
 	else
 	{
       CPaintDC dc(this);
-      Gdiplus::Graphics graph(dc.m_hDC); // 创建图形对象
-      graph.SetSmoothingMode(Gdiplus::SmoothingMode::SmoothingModeAntiAlias);
 
-      graph.DrawImage(m_painter->getBitmap(), 0, 0 );
+	  CRect rect;
+	  GetClientRect(&rect);
+	  dc.BitBlt(0, 0, rect.Width(), rect.Height(), &m_memDC, 0, 0, SRCCOPY);
 
-	  //for (auto& p : mousePts)
-	  //{
-		//  Gdiplus::Pen ptPen(Gdiplus::Color::Green, 3);
-	//	  graph.DrawEllipse(&ptPen, p.x, p.y, 5, 5);
-	  //}
-		CDialogEx::OnPaint();
+	  CDialogEx::OnPaint();
 	}  
 }
 
@@ -122,7 +125,7 @@ void CHandWriteDlg::OnMouseMove(UINT nFlags, CPoint point)
       Point p(point.x, point.y);
       m_toolController->continueDrawing(p);
 
-      //Invalidate(false);
+	  Invalidate(false);
 
    }
 

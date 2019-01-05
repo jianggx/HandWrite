@@ -3,13 +3,13 @@
 #include"PPoint.h"
 
 
-GdiPainter::GdiPainter(int w, int h)  {
-   m_pBitmap.reset(new Gdiplus::Bitmap(w, h));
+GdiPainter::GdiPainter(HDC hdc)  {
+   //m_pBitmap.reset(new Gdiplus::Bitmap(w, h));
    m_pendown = false; 
    m_penmoved = false;
    m_brush.reset(new Gdiplus::SolidBrush(Gdiplus::Color::Black));
 
-   m_pGraphics = Gdiplus::Graphics::FromImage(m_pBitmap.get());
+   m_pGraphics = Gdiplus::Graphics::FromHDC(hdc);
    m_pGraphics->SetSmoothingMode(Gdiplus::SmoothingMode::SmoothingModeAntiAlias);
 };
 

@@ -5,7 +5,7 @@ class GdiPainter :
    public Painter
 {
 public:
-   GdiPainter(int w, int h);
+   GdiPainter(HDC hdc);
    virtual ~GdiPainter();
 
    virtual void PenDown(const PPoint& point);
@@ -24,6 +24,7 @@ private:
    bool m_penmoved;
    PPoint m_lastpoint;
    std::auto_ptr < Gdiplus::SolidBrush> m_brush;
+
 
 };
 

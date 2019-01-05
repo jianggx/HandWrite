@@ -32,6 +32,10 @@ protected:
 
    std::vector<CPoint> mousePts;
 
+
+   CDC m_memDC;
+   CBitmap m_membmp;
+
    CDC m_dcMemory;
 
 	// 生成的消息映射函数
