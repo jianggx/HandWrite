@@ -64,10 +64,11 @@ BOOL CHandWriteDlg::OnInitDialog()
    m_memDC.CreateCompatibleDC(dc);
    m_membmp.CreateCompatibleBitmap(dc, rect.Width(), rect.Height());
    m_memDC.SelectObject(&m_membmp);
-   m_memDC.FillSolidRect(0, 0, rect.Width(), rect.Height(), RGB(255, 255, 255));
 
-   m_painter.reset(new GdiPainter(m_memDC.m_hDC));
+   m_painter.reset(new GdiPainter());
+   m_painter->SetDibTarget(&m_memDC, rect.Width(), rect.Height());
    m_toolController.reset(new ToolController(m_painter.get()));
+   m_memDC.FillSolidRect(0, 0, rect.Width(), rect.Height(), RGB(255, 255, 255));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }

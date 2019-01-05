@@ -60,6 +60,9 @@
     <ClInclude Include="toolcontroller.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MyBrush.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HandWrite.cpp">
@@ -87,6 +90,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="toolcontroller.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MyBrush.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
