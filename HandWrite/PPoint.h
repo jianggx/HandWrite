@@ -72,10 +72,11 @@ public:
 
    double x() const { return m_x; }
    double y() const { return m_y; }
-   double pressure() const { return m_p; }
+   double p() const { return m_p; }
 
    double& rx() { return m_x; }
    double& ry() { return m_y; }
+   double& rp() { return m_p; }
 
    //! Set this point's pressure value
    void setPressure(double p) { assert(p >= 0 && p <= 1); m_p = p; }
@@ -108,12 +109,12 @@ public:
 
 static inline PPoint operator-(const PPoint& p1, const PPoint& p2)
 {
-   return PPoint(p1.x() - p2.x(), p1.y() - p2.y(), p1.pressure());
+   return PPoint(p1.x() - p2.x(), p1.y() - p2.y(), p1.p());
 }
 
 static inline PPoint operator+(const PPoint& p1, const PPoint& p2)
 {
-   return PPoint(p1.x() + p2.x(), p1.y() + p2.y(), p1.pressure());
+   return PPoint(p1.x() + p2.x(), p1.y() + p2.y(), p1.p());
 }
 
 static inline bool operator==(const PPoint& p1, const PPoint& p2)

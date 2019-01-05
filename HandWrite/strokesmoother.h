@@ -86,6 +86,8 @@ private:
 	std::vector<PPoint> _points;
 	int _pos;
 	int _count; ///< Number of actually sampled points in the buffer
+
+	PPoint _sum;
 };
 
 #endif // STROKESMOOTHER_H

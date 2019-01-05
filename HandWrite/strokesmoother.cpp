@@ -34,7 +34,8 @@ void StrokeSmoother::setSmoothing(int strength)
 
 void StrokeSmoother::addPoint(const PPoint &point)
 {
-	assert(_points.size()>0);
+	int size = _points.size();
+	assert(size>0);
 
 	if(_count == 0) {
 		/* Pad the buffer with this point, so we blend away from it
@@ -42,10 +43,18 @@ void StrokeSmoother::addPoint(const PPoint &point)
 		 * as one point so we know how much real data we have to
 		 * drain if it was a very short stroke. */
       std::fill(_points.begin(), _points.end(), point);
+	  _sum.rx() = point.x() * size;
+	  _sum.ry() = point.y() * size;
+	  _sum.rp() = point.p() * size;
 		//_points.fill(point);
 	} else {
 		if(--_pos < 0)
 			_pos = _points.size()-1;
+		
+		_sum.rx() += point.x()- _points[_pos].x();
+		_sum.ry() += point.y() - _points[_pos].y();
+		_sum.rp() += point.p() - _points[_pos].p();
+
 		_points[_pos] = point;
 	}
 
@@ -60,7 +69,10 @@ PPoint StrokeSmoother::at(int i) const
 
 void StrokeSmoother::setLastPointPressure(double pressure)
 {
-   _points.at(_pos % _points.size()).setPressure(pressure);
+	PPoint& point = _points.at(_pos % _points.size());
+	_sum.rp() += pressure - point.m_p;
+
+	point.setPressure(pressure);
 }
 
 void StrokeSmoother::reset()
@@ -81,18 +93,10 @@ PPoint StrokeSmoother::smoothPoint() const
 	// A simple unweighted sliding-average smoother
 	PPoint p = at(0);
 
-	double pressure = p.pressure();
-	for(int i=1;i<_points.size();++i) {
-		PPoint pi = at(i);
-		p.rx() += pi.x();
-		p.ry() += pi.y();
-		pressure += pi.pressure();
-	}
-
 	const double c = _points.size();
-	p.rx() /= c;
-	p.ry() /= c;
-	p.setPressure(pressure / c);
+	p.rx() = _sum.x() / c;
+	p.ry() = _sum.y() / c;
+	p.rp() = _sum.p() / c;
 
 	return p;
 }
@@ -103,5 +107,11 @@ void StrokeSmoother::removePoint()
 	/* Pad the buffer with the final point, overwriting the oldest first,
 	 * for symmetry with starting. For very short strokes this should
 	 * really set all points between --_count and _points.size()-1. */
-	_points[(_pos + --_count) % _points.size()] = latestPoint();
+	PPoint& point = _points[(_pos + --_count) % _points.size()];
+	PPoint lp = latestPoint();
+	_sum.rx() += lp.x() - point.x();
+	_sum.ry() += lp.y() - point.y();
+	_sum.rp() += lp.p() - point.p();
+
+	_points[(_pos + --_count) % _points.size()] = lp;
 }

@@ -20,7 +20,7 @@ GdiPainter::~GdiPainter()
 
 
 void GdiPainter::directDab(const PPoint& pt) {
-	m_pGraphics->FillEllipse(m_brush.get(), Gdiplus::REAL(pt.x()), pt.y(), m_penwidth*pt.pressure(), m_penwidth*pt.pressure());
+	m_pGraphics->FillEllipse(m_brush.get(), Gdiplus::REAL(pt.x()), pt.y(), m_penwidth*pt.p(), m_penwidth*pt.p());
 }
 
 void GdiPainter::drawSoftLine(const PPoint& from, const PPoint& to)
@@ -30,20 +30,20 @@ void GdiPainter::drawSoftLine(const PPoint& from, const PPoint& to)
 	const double dist = hypot(dx, dy);
 	dx = dx / dist;
 	dy = dy / dist;
-	const double dp = (to.pressure() - from.pressure()) / dist;
+	const double dp = (to.p() - from.p()) / dist;
 
 	const double spacing_base = max(1.0, m_penwidth/5);
 
 	double i=0;
 
-	PPoint p(from.x() + dx * i, from.y() + dy * i,  from.pressure() + dp * i);
+	PPoint p(from.x() + dx * i, from.y() + dy * i,  from.p() + dp * i);
 
 	while (i < dist) {
-		const double spacing = max(1.0, spacing_base*p.pressure());
+		const double spacing = max(1.0, spacing_base*p.p());
 		directDab(p);
 		p.rx() += dx * spacing;
 		p.ry() += dy * spacing;
-		p.setPressure(min(max(0.0, p.pressure() + dp * spacing), 1.0));
+		p.rp() = min(max(0.0, p.p() + dp * spacing), 1.0);
 		i += spacing;
 	}
 }
