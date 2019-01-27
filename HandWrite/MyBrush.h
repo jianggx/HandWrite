@@ -13,6 +13,8 @@ public:
 	COLORREF SetColor(COLORREF rgb);
 	COLORREF GetColor();
 	void SetWidthCircleBrush(float fWidth); //设置为圆形刷子，宽度，用于画笔，毛笔
+	void SetWidthCircleBrush2(double fWidth, double cntx, double cnty);
+
 	static  RECT empty;
 	void SetWidthSuibiBrush(int nWidth, BYTE gray, RECT r =empty); //设置为水笔荧光笔刷子，宽度，透明度
 	BYTE DisToGrayLine(float fDis);
@@ -27,6 +29,10 @@ public:
 	BYTE	*m_pBuf;	//刷子缓冲区
 	int		m_nHalfRect; //刷子占用正方形的半径
 	int		m_nPenWidthMaobi; //用于毛笔
+
+	int m_nHalfW;
+	int m_nHalfH;
+
 
 	BYTE	m_a256x256[256][256]; //一张快表[i,j]=((i+1)*(j+1)-1)/256  浓淡表，左上角向右下角辐射到最大值
 	

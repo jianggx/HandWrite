@@ -49,9 +49,9 @@ ToolController::ToolController(Painter* painter)
 	m_pressureMaping.mode = PressureMapping::Mode::VELOCITY;
 	m_pressureMaping.curve.fromString("0,1;1,0");
 
-	m_smoothing = 5;
+	m_smoothing = 10;
 	m_smoother.setSmoothing(m_smoothing);
-	m_pressureMaping.param = 80;
+	m_pressureMaping.param = 60;
 	m_painter->setPenWidth(5);
 
 }

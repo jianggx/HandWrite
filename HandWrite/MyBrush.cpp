@@ -78,7 +78,50 @@ void CMyBrush::SetWidthSuibiBrush( int nWidth, BYTE gray, RECT empty)
 
 }
 
-void CMyBrush::SetWidthCircleBrush( float fWidth )
+int DisToGrayCircle2(double distance, double fWidth)
+{
+	int rv = 255 * (fWidth - distance) / fWidth;
+	return min(255, max(rv, 0));
+}
+
+void CMyBrush::SetWidthCircleBrush2(double fWidth, double cntx, double cnty)
+{
+	if (fWidth < 1.f)
+	{
+		fWidth = 1.f;
+	}
+	else if (fWidth > m_nLength - 6.f)
+	{
+		fWidth = m_nLength - 6.f;
+	}
+
+	double half_w = fWidth / 2;
+	int x0 = int(cntx - half_w);
+	int x1 = int(ceil(cntx + half_w));
+	if ((x1 - x0) % 2 == 1)
+		x0 -= 1;
+	m_nHalfRect = (x1 - x0) / 2;
+
+	int y0 = int(cnty - half_w);
+	int y1 = y0 + x1 - x0;
+
+	memset(m_pBuf, 0, m_nLength*m_nLength);
+
+	BYTE *pi = m_pBuf + (m_nMid - m_nHalfRect)*m_nLength;
+	for (int i = -m_nHalfRect; i <= m_nHalfRect; i++, pi += m_nLength) //初始化圆刷子
+	{
+		BYTE *pij = pi + (m_nMid - m_nHalfRect);
+		for (int j = -m_nHalfRect; j <= m_nHalfRect; j++, pij++)
+		{
+			double dis = sqrt(pow(x0 + i+ m_nHalfRect - cntx, 2) + pow(y0 + j + m_nHalfRect - cnty, 2));
+
+			*pij = DisToGrayCircle2(dis, half_w);
+		}
+	}
+
+}
+
+void CMyBrush::SetWidthCircleBrush(float fWidth)
 {
 	if (fWidth < 1.f)
 	{
@@ -212,12 +255,5 @@ void CMyBrush::MergeColor( BYTE rgbOld[3], BYTE gray )
 	rgbOld[2] = ptr1[m_aRGB[0]] + ptr2[rgbOld[2]];  //r 原始代码
 	rgbOld[1] = ptr1[m_aRGB[1]] + ptr2[rgbOld[1]];  //g
 	rgbOld[0] = ptr1[m_aRGB[2]] + ptr2[rgbOld[0]];  //b
-
-	//FILE_LOG(logINFO) << gray << ",1="<< ptr1[m_aRGB[0]]<<","<< ptr1[m_aRGB[1]]<<","<< ptr1[m_aRGB[2]];
-	//FILE_LOG(logINFO) << gray << ",2=" << ptr2[rgbOld[0]] << "," << ptr2[rgbOld[1]] << "," << ptr2[rgbOld[2]];
-	//rgbOld[2] = ptr1[m_aRGB[0]];//不让背景色参与运算会丢失模糊度，也就是抗锯齿
-	//rgbOld[1] = ptr1[m_aRGB[1]];//
-	//rgbOld[0] = ptr1[m_aRGB[2]];//
-
 }
 

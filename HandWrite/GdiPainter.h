@@ -21,7 +21,8 @@ public:
 
    void SetDibTarget(CDC* pdc, int nDibWidth, int nDibHeight);
    HBITMAP CreateGDIBitmap(HDC hdc, int nWid, int nHei, void ** ppBits);
-   void FillPtPixel(int x, int y, BYTE gray);
+   void FillPtPixel(const PPoint& point);
+   void FillPtPixel2(const PPoint& point);
 private:
    std::auto_ptr<Gdiplus::Bitmap> m_pBitmap;
    Gdiplus::Graphics* m_pGraphics;
