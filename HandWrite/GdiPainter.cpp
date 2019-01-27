@@ -104,8 +104,7 @@ void GdiPainter::FillPtPixel2(const PPoint& point)
 	int x = point.x();
 	int y = point.y();
 	BYTE gray = 255;
-	m_penwidth = 10;
-	double width = m_penwidth * point.p();
+	double width = max(m_penwidth * point.p(),1);
 
 	int nHalfRect = (width+3)/2;
 
@@ -162,12 +161,8 @@ void GdiPainter::drawSoftLine(const PPoint& from, const PPoint& to)
 	dy = dy / dist;
 	const double dp = (to.p() - from.p()) / dist;
 
-	const double spacing_base = max(0.5, m_penwidth/5);
-
 	double i=0;
-
 	PPoint p(from.x() + dx * i, from.y() + dy * i,  from.p() + dp * i);
-
 	while (i < dist) {
 		directDab(p);
 		p.rx() += dx ;

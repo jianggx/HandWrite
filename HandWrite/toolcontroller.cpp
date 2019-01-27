@@ -51,8 +51,8 @@ ToolController::ToolController(Painter* painter)
 
 	m_smoothing = 10;
 	m_smoother.setSmoothing(m_smoothing);
-	m_pressureMaping.param = 60;
-	m_painter->setPenWidth(5);
+	m_pressureMaping.param = 80; //当鼠标移动速度大于这个数值是，线宽变为0
+	m_painter->setPenWidth(8);
 
 }
 
