@@ -11,11 +11,13 @@
 #include "GdiPainter.h"
 #include"PPoint.h"
 #include"toolcontroller.h"
+#include "log.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+#define LOG_POINT 1
 
 // CHandWriteDlg 对话框
 
@@ -25,6 +27,7 @@ CHandWriteDlg::CHandWriteDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(IDD_HANDWRITE_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_lbuttondown = false;
 }
 
 void CHandWriteDlg::DoDataExchange(CDataExchange* pDX)
@@ -112,6 +115,7 @@ void CHandWriteDlg::OnPaint()
 //显示。
 HCURSOR CHandWriteDlg::OnQueryDragIcon()
 {
+	FILE_LOG(logINFO) << "OnQueryDragIcon";
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
@@ -119,23 +123,32 @@ HCURSOR CHandWriteDlg::OnQueryDragIcon()
 
 void CHandWriteDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
+
    // TODO: 在此添加消息处理程序代码和/或调用默认值
    if (m_lbuttondown) {
-	   mousePts.push_back(point);
 
+	   if (LOG_POINT) {
+		   long long t = NowTime();
+		   FILE_LOG(logINFO) << "dTime=" << t - m_lastMoveTime;
+		   m_lastMoveTime = t;
+		   FILE_LOG(logINFO) << "Move x=" << (int)point.x << ",y=" << (int)point.y;
+	   }
+
+	   mousePts.push_back(point);
       Point p(point.x, point.y);
       m_toolController->continueDrawing(p);
 
 	  Invalidate(false);
-
    }
 
-   CDialogEx::OnMouseMove(nFlags, point);
+   //CDialogEx::OnMouseMove(nFlags, point);
 }
 
 
 void CHandWriteDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	m_lastMoveTime = NowTime();
+
    // TODO: 在此添加消息处理程序代码和/或调用默认值
    m_lbuttondown = true;
    mousePts.push_back(point);
@@ -145,7 +158,7 @@ void CHandWriteDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
    //Invalidate(false);
 
-   CDialogEx::OnLButtonDown(nFlags, point);
+   //CDialogEx::OnLButtonDown(nFlags, point);
 }
 
 
@@ -161,5 +174,5 @@ void CHandWriteDlg::OnLButtonUp(UINT nFlags, CPoint point)
    }
 
 
-   CDialogEx::OnLButtonUp(nFlags, point);
+   //CDialogEx::OnLButtonUp(nFlags, point);
 }

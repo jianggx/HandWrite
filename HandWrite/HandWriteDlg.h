@@ -26,7 +26,7 @@ public:
 // 实现
 protected:
 	HICON m_hIcon;
-   bool m_lbuttondown = false;
+   bool m_lbuttondown;
    std::auto_ptr<ToolController> m_toolController;
    std::auto_ptr<GdiPainter> m_painter;
 
@@ -37,6 +37,7 @@ protected:
    CBitmap m_membmp;
 
    CDC m_dcMemory;
+   long long m_lastMoveTime;
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();

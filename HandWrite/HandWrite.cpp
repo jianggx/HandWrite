@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "HandWrite.h"
 #include "HandWriteDlg.h"
+#include "log.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,6 +32,7 @@ CHandWriteApp::CHandWriteApp()
 
 CHandWriteApp theApp;
 
+ThreadMutex  g_Log_Mutex[4];
 
 // CHandWriteApp 初始化
 
@@ -40,6 +42,11 @@ BOOL CHandWriteApp::InitInstance()
 
    // 初始化GDI+
    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+   FILE * fp = fopen("handwrite.log", "wb");
+   if (fp)
+	   Output2FILE::Stream() = fp;
+   Logs::logInfo("=============================================================");
 
 
 	// 创建 shell 管理器，以防对话框包含

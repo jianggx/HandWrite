@@ -60,7 +60,7 @@
     <ClInclude Include="toolcontroller.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MyBrush.h">
+    <ClInclude Include="log.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
