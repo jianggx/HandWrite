@@ -7,3 +7,14 @@ ipch/
 *.opendb
 *.aps
 *.db
+
+*.log
+*.tlog
+*.obj
+*.pch
+*.res
+*.pdb
+
+x64/
+Release/
+enc_temp_folder/

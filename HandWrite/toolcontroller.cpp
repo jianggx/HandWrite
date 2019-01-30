@@ -27,7 +27,7 @@
 
 ToolController::ToolController()
 	:
-	m_toolbox{},
+	m_toolbox(),
 	m_activeTool(nullptr),
 	m_painter(nullptr),
 	m_smoothing(10),
@@ -37,7 +37,7 @@ ToolController::ToolController()
 
 ToolController::ToolController(Painter* painter)
 	:
-	m_toolbox{},
+	//m_toolbox{},
 	m_activeTool(nullptr),
 	m_painter(painter),
 	m_drawBegined(false)
